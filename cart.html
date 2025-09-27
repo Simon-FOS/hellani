@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Hellani's Store</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8B4513;
+            /* SaddleBrown - earthy, food-friendly */
+            --secondary: #D2691E;
+            /* Chocolate */
+            --accent: #CD853F;
+            /* Peru */
+            --light: #F5F5DC;
+            /* Beige */
+            --dark: #654321;
+            /* DarkBrown */
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: var(--primary);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('static/cart-hero.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .quantity-control {
+            max-width: 140px;
+        }
+
+        .quantity-control .btn {
+            width: 40px;
+        }
+
+        .price {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            border-bottom: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark);
+            border-color: var(--dark);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-cart-icon {
+            font-size: 5rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .discount-badge {
+            background-color: var(--success);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .delivery-options {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .delivery-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .delivery-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .delivery-option input {
+            margin-right: 10px;
+        }
+
+        .recommended-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+        }
+
+        .cart-badge {
+            background-color: var(--secondary);
+        }
+
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--secondary);
+        }
+
+        .promo-code {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .hero-section {
+                padding: 40px 0;
+            }
+
+            .cart-summary {
+                position: static;
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hellani's Store</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="products.html">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">
+                            <i class="fas fa-shopping-cart"></i> Cart
+                            <span class="badge cart-badge" id="cartCount">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-5">Your Shopping Cart</h1>
+            <p class="lead">Review your items and proceed to checkout</p>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="section-title">Cart Items</h2>
+
+                    <div id="cartItems">
+                        <!-- Cart items will be loaded here by JavaScript -->
+                    </div>
+
+                    <div id="emptyCart" class="empty-cart" style="display: none;">
+                        <div class="empty-cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h3>Your cart is empty</h3>
+                        <p>Looks like you haven't added any products to your cart yet.</p>
+                        <a href="products.html" class="btn btn-primary">Continue Shopping</a>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="products.html" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
+                        </a>
+                        <button class="btn btn-danger" id="clearCart" style="display: none;">
+                            <i class="fas fa-trash"></i> Clear Cart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="cart-summary">
+                        <h3 class="section-title">Order Summary</h3>
+
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">₦0</span>
+                        </div>
+
+                        <div class="delivery-options">
+                            <h5>Delivery Option</h5>
+                            <div class="delivery-option">
+                                <input type="radio" id="delivery-standard" name="delivery" value="1500" checked>
+                                <label for="delivery-standard">
+                                    Standard Delivery (₦1,500)
+                                    <span class="recommended-badge">2-3 days</span>
+                                </label>
+                            </div>
+                            <div class="delivery-option">
+                                <input type="radio" id="delivery-express" name="delivery" value="2500">
+                                <label for="delivery-express">
+                                    Express Delivery (₦2,500)
+                                    <span class="recommended-badge">24 hours</span>
+                                </label>
+                            </div>
+                            <div class="delivery-option">
+                                <input type="radio" id="delivery-pickup" name="delivery" value="0">
+                                <label for="delivery-pickup">Store Pickup (Free)</label>
+                            </div>
+                        </div>
+
+                        <div class="promo-code">
+                            <h5>Promo Code</h5>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" placeholder="Enter promo code" id="promoCode">
+                                <button class="btn btn-outline-primary" type="button" id="applyPromo">Apply</button>
+                            </div>
+                            <div id="promoMessage" class="small"></div>
+                        </div>
+
+                        <div class="summary-row">
+                            <span>Delivery Fee:</span>
+                            <span id="deliveryFee">₦1,500</span>
+                        </div>
+
+                        <div class="summary-row" id="discountRow" style="display: none;">
+                            <span>Discount:</span>
+                            <span id="discountAmount">-₦0</span>
+                        </div>
+
+                        <div class="summary-row summary-total">
+                            <span>Total:</span>
+                            <span id="total">₦0</span>
+                        </div>
+
+                        <button class="btn btn-success w-100 mt-3" id="checkoutButton" disabled>
+                            <i class="fab fa-whatsapp"></i> Checkout via WhatsApp
+                        </button>
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-lock"></i> Your order will be securely processed via WhatsApp
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Need Help?</h5>
+                                <p class="card-text">Our customer service team is here to assist you with your order.
+                                </p>
+                                <a href="contact.html" class="btn btn-outline-primary btn-sm">Contact Us</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recently Viewed Products -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title text-center">You Might Also Like</h2>
+            <div class="row" id="suggestedProducts">
+                <!-- Suggested products will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Hellani's Store</h5>
+                    <p>Premium food processing company offering natural, nutritious products for healthy living.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Info</h5>
+                    <p><i class="fas fa-map-marker-alt"></i> Zakibiam street, behind New Life Assembly Redeem Church
+                        phase 3 Kubwa Abuja</p>
+                    <p><i class="fas fa-phone"></i> +234 806 699 2355</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html" class="text-light">Home</a></li>
+                        <li><a href="products.html" class="text-light">Products</a></li>
+                        <li><a href="about.html" class="text-light">About Us</a></li>
+                        <li><a href="contact.html" class="text-light">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <p class="text-center mb-0">&copy; 2023 Hellani's Store. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Product data (same as products page)
+        const products = [
+            {
+                id: 1,
+                name: "Tigernut Powder 1kg",
+                price: 8500,
+                category: "powders",
+                image: "static/tigernut-powder.jpg",
+                description: "Nutritious tigernut powder perfect for making the popular tiger nut drink (Kunun Aya) or adding to smoothies. Rich in fiber and essential nutrients."
+            },
+            {
+                id: 2,
+                name: "Peeled Beans 1kg",
+                price: 3500,
+                category: "beans",
+                image: "static/peeled-beans.jpg",
+                description: "Conveniently peeled beans that save preparation time. Perfect for making smooth bean porridge or moi moi. High in protein and fiber."
+            },
+            {
+                id: 3,
+                name: "Powdered Beans 1kg",
+                price: 4000,
+                category: "powders",
+                image: "static/beans-flour.jpg",
+                description: "Finely ground bean flour ideal for making akara, moi moi, or as a protein-rich addition to various dishes. Easy to use and highly nutritious."
+            },
+            {
+                id: 4,
+                name: "Ijebu Garri 1kg",
+                price: 2500,
+                category: "powders",
+                image: "static/garri.jpg",
+                description: "Premium Ijebu garri with its characteristic sour taste. Perfect for soaking or eating with various accompaniments. A Nigerian staple food."
+            },
+            {
+                id: 5,
+                name: "Cocoyam Powder 200g",
+                price: 2000,
+                category: "powders",
+                image: "static/cocoyam-powder.jpg",
+                description: "Versatile cocoyam powder that can be used for thickening soups or making traditional dishes like fufu. Gluten-free and nutritious."
+            },
+            {
+                id: 6,
+                name: "Suya Spice 200g",
+                price: 2500,
+                category: "spices",
+                image: "static/suya-spice.jpg",
+                description: "Authentic suya spice blend that gives your grilled meats the signature Nigerian suya flavor. A perfect blend of spices for delicious barbecue."
+            },
+            {
+                id: 7,
+                name: "Crayfish 1 Bucket",
+                price: 13000,
+                category: "seafood",
+                image: "static/crayfish.jpg",
+                description: "Premium quality crayfish that adds rich flavor to soups, stews, and various traditional dishes. A key ingredient in Nigerian cuisine."
+            },
+            {
+                id: 8,
+                name: "Palm Oil 5L",
+                price: 14000,
+                category: "oils",
+                image: "static/palm-oil.jpg",
+                description: "Pure, natural palm oil that is rich in vitamins and antioxidants. Essential for authentic Nigerian cooking and traditional dishes."
+            },
+            {
+                id: 9,
+                name: "Pure Honey 1L",
+                price: 12000,
+                category: "oils",
+                image: "static/honey.jpg",
+                description: "100% pure, natural honey with no additives. A healthy sweetener with numerous health benefits. Perfect for teas, baking, and more."
+            },
+            {
+                id: 10,
+                name: "Honey Beans 1kg",
+                price: 3000,
+                category: "beans",
+                image: "static/honey-beans.jpg",
+                description: "Sweet honey beans that cook quickly and have a delightful flavor. Perfect for various bean dishes. High in protein and fiber."
+            }
+        ];
+
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let discount = 0;
+        let discountCode = '';
+
+        // Update cart count in navbar
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        // Calculate cart subtotal
+        function calculateSubtotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        // Get delivery fee from selected option
+        function getDeliveryFee() {
+            const selectedOption = document.querySelector('input[name="delivery"]:checked');
+            return parseInt(selectedOption.value);
+        }
+
+        // Calculate total with delivery and discount
+        function calculateTotal() {
+            const subtotal = calculateSubtotal();
+            const deliveryFee = getDeliveryFee();
+            return subtotal + deliveryFee - discount;
+        }
+
+        // Update cart display
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const emptyCart = document.getElementById('emptyCart');
+            const clearCartBtn = document.getElementById('clearCart');
+            const checkoutBtn = document.getElementById('checkoutButton');
+
+            // Clear previous content
+            cartItemsContainer.innerHTML = '';
+
+            if (cart.length === 0) {
+                emptyCart.style.display = 'block';
+                clearCartBtn.style.display = 'none';
+                checkoutBtn.disabled = true;
+                updateSummary();
+                return;
+            }
+
+            emptyCart.style.display = 'none';
+            clearCartBtn.style.display = 'block';
+            checkoutBtn.disabled = false;
+
+            // Render each cart item
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if (!product) return;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <div class="row align-items-center">
+                        <div class="col-3 col-md-2">
+                            <img src="${product.image}" alt="${product.name}" class="cart-item-image">
+                        </div>
+                        <div class="col-5 col-md-6">
+                            <h5>${product.name}</h5>
+                            <p class="price">₦${product.price.toLocaleString()}</p>
+                        </div>
+                        <div class="col-4 col-md-4">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <div class="quantity-control me-3">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                        <input type="number" class="form-control text-center" value="${item.quantity}" min="1" onchange="updateQuantity(${item.id}, parseInt(this.value))">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger btn-sm" onclick="removeFromCart(${item.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="text-end mt-2">
+                                <strong>₦${(item.price * item.quantity).toLocaleString()}</strong>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            updateSummary();
+        }
+
+        // Update order summary
+        function updateSummary() {
+            const subtotal = calculateSubtotal();
+            const deliveryFee = getDeliveryFee();
+            const total = calculateTotal();
+
+            document.getElementById('subtotal').textContent = `₦${subtotal.toLocaleString()}`;
+            document.getElementById('deliveryFee').textContent = `₦${deliveryFee.toLocaleString()}`;
+            document.getElementById('total').textContent = `₦${total.toLocaleString()}`;
+
+            // Show/hide discount row
+            const discountRow = document.getElementById('discountRow');
+            const discountAmount = document.getElementById('discountAmount');
+
+            if (discount > 0) {
+                discountRow.style.display = 'flex';
+                discountAmount.textContent = `-₦${discount.toLocaleString()}`;
+            } else {
+                discountRow.style.display = 'none';
+            }
+        }
+
+        // Add to cart function
+        function addToCart(productId, quantity = 1) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity,
+                    image: product.image
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            renderCart();
+            showNotification(`${product.name} added to cart!`);
+        }
+
+        // Remove from cart function
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+            renderCart();
+            showNotification('Item removed from cart');
+        }
+
+        // Update quantity in cart
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) {
+                removeFromCart(productId);
+                return;
+            }
+
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                renderCart();
+            }
+        }
+
+        // Clear entire cart
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                renderCart();
+                discount = 0;
+                discountCode = '';
+                document.getElementById('promoCode').value = '';
+                document.getElementById('promoMessage').textContent = '';
+                showNotification('Cart cleared');
+            }
+        }
+
+        // Apply promo code
+        function applyPromoCode() {
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const messageElement = document.getElementById('promoMessage');
+
+            // Reset previous discount
+            discount = 0;
+
+            // Check promo codes
+            if (code === 'HELLANI10' && calculateSubtotal() >= 10000) {
+                discount = calculateSubtotal() * 0.1; // 10% discount
+                discountCode = code;
+                messageElement.innerHTML = '<span class="text-success">10% discount applied!</span>';
+                showNotification('Promo code applied successfully!');
+            } else if (code === 'FIRSTORDER' && cart.length > 0) {
+                discount = 1000; // ₦1000 discount
+                discountCode = code;
+                messageElement.innerHTML = '<span class="text-success">₦1,000 discount applied!</span>';
+                showNotification('Promo code applied successfully!');
+            } else if (code === '') {
+                messageElement.innerHTML = '<span class="text-warning">Please enter a promo code</span>';
+            } else {
+                messageElement.innerHTML = '<span class="text-danger">Invalid promo code or minimum order not met</span>';
+            }
+
+            updateSummary();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success position-fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1060';
+            notification.innerHTML = `<i class="fas fa-check-circle me-2"></i> ${message}`;
+
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Checkout function - sends order to WhatsApp
+        function checkout() {
+            if (cart.length === 0) return;
+
+            let message = "Hello! I would like to place an order from Hellani's Store:%0A%0A";
+
+            cart.forEach(item => {
+                message += `- ${item.name} (x${item.quantity}) - ₦${(item.price * item.quantity).toLocaleString()}%0A`;
+            });
+
+            const subtotal = calculateSubtotal();
+            const deliveryFee = getDeliveryFee();
+            const total = calculateTotal();
+
+            message += `%0ASubtotal: ₦${subtotal.toLocaleString()}%0A`;
+            message += `Delivery: ₦${deliveryFee.toLocaleString()}%0A`;
+
+            if (discount > 0) {
+                message += `Discount (${discountCode}): -₦${discount.toLocaleString()}%0A`;
+            }
+
+            message += `Total: ₦${total.toLocaleString()}%0A%0A`;
+            message += "Please contact me to confirm my order and arrange delivery.";
+
+            const phone = "+2348066992355";
+            const url = `https://wa.me/${phone}?text=${message}`;
+
+            window.open(url, '_blank');
+        }
+
+        // Render suggested products
+        function renderSuggestedProducts() {
+            const suggestedContainer = document.getElementById('suggestedProducts');
+            if (!suggestedContainer) return;
+
+            // Get 4 random products (excluding those in cart)
+            const cartProductIds = cart.map(item => item.id);
+            const availableProducts = products.filter(p => !cartProductIds.includes(p.id));
+            const suggestedProducts = [...availableProducts].sort(() => 0.5 - Math.random()).slice(0, 4);
+
+            if (suggestedProducts.length === 0) return;
+
+            suggestedProducts.forEach(product => {
+                const col = document.createElement('div');
+                col.className = 'col-md-3 col-6 mb-4';
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 150px; object-fit: cover;">
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">${product.name}</h6>
+                            <p class="price mb-2">₦${product.price.toLocaleString()}</p>
+                            <button class="btn btn-primary btn-sm mt-auto" onclick="addToCart(${product.id}, 1)">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+                suggestedContainer.appendChild(col);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            updateCartCount();
+            renderCart();
+            renderSuggestedProducts();
+
+            // Event listeners
+            document.getElementById('clearCart').addEventListener('click', clearCart);
+            document.getElementById('checkoutButton').addEventListener('click', checkout);
+            document.getElementById('applyPromo').addEventListener('click', applyPromoCode);
+
+            // Update summary when delivery option changes
+            document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+                radio.addEventListener('change', updateSummary);
+            });
+
+            // Allow pressing Enter in promo code field
+            document.getElementById('promoCode').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    applyPromoCode();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
